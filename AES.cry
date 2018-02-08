@@ -1,0 +1,211 @@
+// User defined Types
+type Nk = 4 			 // No. of 32-bit words in the key
+type Nb = 4			   	 // No. of columns in a 128-bit block
+type Nr = 10			 // No. of rounds
+type GF28 = [8]			 // Elements in GF (2^8)
+type State = [4][Nb]GF28 // 4 X Nb matrix of values that are elmeents in GF(2^8)
+
+//-----------------------//
+// Functions - Each step of AES encryption is broken down 
+// into multiple functions, i.e. the system is built bottom-up.
+
+// Basic addition and multiplication
+
+// Addition in GF (2^8) - Adds a sequence of 'n' polynomials in GF (2^8).
+GF28Add : {n} (fin n) => [n]GF28 -> GF28
+GF28Add xs = sum ! 0
+        where sum = [zero] # [x ^ y | x<-xs | y<-sum]
+
+// Multiplication in GF(2^8) - Multiplies 2 polynomials in GF (2^8).
+GF28Mult : (GF28, GF28) -> GF28
+GF28Mult (x,y) = pmod (pmult x y) irreducible 
+	where irreducible = <|x^^8 + x^^4 + x^^3 + x + 1|>
+
+// Finding x^n where x belongs to GF(2^8)
+// First write functions for finding odd and even powers
+
+// Odd powers: x^n = x*x^(n-1) where n=odd
+GF28OddPow : (GF28,[8]) -> GF28
+GF28OddPow (x,n) = if n==1 then x else GF28Mult(x,GF28EvenPow (x,n-1))
+
+// Even powers: x^n = (x^(n/2))^2 where n=even
+GF28EvenPow : (GF28,[8]) -> GF28
+GF28EvenPow (x,n) = if n==0 then 1 else GF28Mult(y,y) 
+	where y = if n!1 then  GF28OddPow (x,n>>1) else GF28EvenPow (x,n>>1)
+
+// Find x^n using the odd and even power functions written above
+GF28Pow : (GF28, [8]) -> GF28
+GF28Pow (x,n) = if n!0 then GF28OddPow(x,n) else GF28EvenPow(x,n) 
+
+//////////////////////////////
+////-------SubBytes-------////
+//////////////////////////////
+
+// Finding inverse in GF(2^8) - inverse of a polynomial x in GF(2^8) = x^254
+GF28Inv : GF28 -> GF28
+GF28Inv x = GF28Pow (x,254)
+
+// The affine transformation required in SubBytes
+transformByte : GF28 -> GF28
+transformByte b = GF28Add [b,b>>>4, b>>>5, b>>>6, b>>>7, c]
+	where c = 0x63
+
+// subByte - for a single byte; Take inverse in GF(2^8), 
+// followed by affine transformation
+subByte : GF28 -> GF28
+subByte b = transformByte b_inv 
+	where b_inv = GF28Inv b
+
+// subBytes - for each byte of the AES State Matrix
+subBytes : State -> State
+subBytes state = [[subByte b | b<-row] | row<-state]
+
+///////////////////////////////
+////-------ShiftRows-------////
+///////////////////////////////
+
+// shiftRows: Rows 1,2,3, and 4 rotate left by 0,1,2, and 3 bytes respectively.
+shiftRows : State -> State
+shiftRows state = [row <<< i 
+					| row<-state 
+					| i<-[0..3]
+				  ]
+
+////////////////////////////////
+////-------MixColumns-------////
+////////////////////////////////
+
+// Build functions for MixColumns step
+// Compute Dot Product of two vectors
+GF28dotProduct : {n} (fin n) => ([n]GF28, [n]GF28) -> GF28
+GF28dotProduct (vect1, vect2) = GF28Add [GF28Mult (x,y) | x<-vect1 | y<-vect2]
+
+// Matrix Multiplication
+GF28matrixMult : {m,n,k} (fin m, fin n) => ([m][n]GF28, [n][k]GF28) -> [m][k]GF28
+GF28matrixMult (mat1, mat2) = [[GF28dotProduct (row_mat1, col_mat2) 
+								| col_mat2<-transpose mat2] 
+								| row_mat1<-mat1
+							  ]
+
+// MixColumns step
+mixColumns : State -> State
+mixColumns state = GF28matrixMult (mix_matrix, state)
+   where mix_matrix = [[0x02,0x03,0x01,0x01],
+		       		   [0x01,0x02,0x03,0x01],
+                       [0x01,0x01,0x02,0x03],
+                       [0x03,0x01,0x01,0x02]]
+
+///////////////////////////////
+////------AddRoundKey------////
+///////////////////////////////
+
+type roundKey = State // Create a type for a single round key
+
+// Create a type for entire key schedule
+type keySchedule = (roundKey, [Nr-1]roundKey, roundKey)
+
+// Build functions for Key Expansion
+
+// Build Rcon - The constant rotating term
+Rcon : [8] -> [Nk]GF28
+Rcon i = [GF28Pow(0x02,i-1),0x00,0x00,0x00]
+
+// subWord - Replace each byte of a word with the appropriate Sbox output of that byte
+subWord : [4]GF28 -> [4]GF28
+subWord word = [subByte b | b<-word]
+
+// rotWord - rotate a word to the left by 8 bits
+rotWord : [4]GF28 -> [4]GF28
+rotWord word = word <<< 1
+
+// Form next word w_i based on word index,  w_(i-1) and w_(i-4)
+nextWord : ([8], [Nk]GF28, [Nk]GF28) -> [Nk]GF28
+nextWord (word_idx, prevW, oldW) = oldW ^ mask
+	where mask = if word_idx%`Nk == 0 
+				 then subWord(rotWord(prevW))^Rcon (word_idx/`Nk) 
+				 else prevW
+
+// Generate round keys for all rounds based on initial key
+roundKeyGen: roundKey -> [11]roundKey
+roundKeyGen initialKey = [transpose k | k<-(groupBy`{4} keys)]
+        where keys = initialKey # [nextWord (word_idx, prev, old) 
+        							| word_idx<-[4..43] 
+        							| prev<-drop`{3} keys 
+        							| old<-keys
+        						  ]
+
+// Overall Key Expansion function that calls
+// key generation function with seed.
+expandKey : [128] -> keySchedule
+expandKey key = (keys @ 0, keys @@ [1..9], keys @ 10) 
+	where seed: [4][4][8]
+	      seed = split (split key)
+	      keys = roundKeyGen seed
+
+
+// AddRoundKey - XOR the State at a particular 
+// round with the corresponding round key.
+addRoundKey : (roundKey, State) -> State
+addRoundKey (round_key,state) = round_key ^ state
+
+////////////////////////////////////
+//----Bringing it all together----//
+////////////////////////////////////
+
+// AES Round - Describe one particular AES round 
+// (index r, r < 0,1..9) by connecting all the steps
+// mentioned above.
+// 1. SBox substitution
+// 2. Shift rows
+// 3. Mix Columns
+// 4. Add round key
+
+AESRound : (roundKey, State) -> State
+AESRound (round_key, state) = addRoundKey (round_key, mixCol_out)
+	where subBytes_out = subBytes (state)
+	      shiftRows_out = shiftRows(subBytes_out)
+	      mixCol_out = mixColumns(shiftRows_out)
+
+// Last round of AES (index r = 10)
+// Same as previous rounds, but no mixColumns step
+
+AESLastRound : (roundKey, State) -> State
+AESLastRound (round_key, state) = addRoundKey (round_key, shiftRows_out)
+	where subBytes_out = subBytes (state)
+              shiftRows_out = shiftRows(subBytes_out)
+ 
+		  
+// Converting a message into State matrix
+// 1. Split the message into blocks of 32 bits
+// 2. Split each 32-bit into bytes
+// 3. Take the transpose since State is organized column-wise.
+
+msgToState : [128] -> State
+msgToState (plaintxt) = transpose (split (split plaintxt))
+
+// Converting the final state output back into ciphertest message
+// 1. First, take the transpose since State is organized column-wise.
+// 2. Join the 4 bytes of each 32-bit block 
+// 3. Join all 32-bit blocks to form the 128-bit message
+
+stateToMsg : State -> [128]
+stateToMsg (ciphertxt) = join (join (transpose ciphertxt))
+
+
+// Top-most function - AESEncryption
+// Call the individual round functions iteratively.
+
+AESEncryption: ([128], [128]) -> [128]
+AESEncryption (plaintxt, Key) = stateToMsg (AESLastRound (rk_final, states ! 0))
+				where keyExp = expandKey(Key)
+				      rk_initial = keyExp.0
+				      rk = keyExp.1
+				      rk_final = keyExp.2
+				      states = [addRoundKey (rk_initial, msgToState (plaintxt))] # [AESRound (round_key, state) 	
+					  				| round_key <- rk 
+					  				| state <- states] 
+
+fromKs : keySchedule -> [11][4][32]
+fromKs (f, ms, l) = [ formKeyWords (transpose k) | k <- [f] # ms # [l]]
+        where formKeyWords bbs = [ join bs | bs <- bbs ]
+
