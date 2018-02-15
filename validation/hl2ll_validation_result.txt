@@ -1,0 +1,36 @@
+AESAVS Validation Results
+
+------
+aesmct
+------
+
+
+Mode: ECB
+
+0 HL ciphertext: 0da1b56ba11c1a5500e95583c0eac913 LL ciphertext: 0da1b56ba11c1a5500e95583c0eac913
+1 HL ciphertext: c8e3b553d3a993a043aecc99c6ec147e LL ciphertext: c8e3b553d3a993a043aecc99c6ec147e
+2 HL ciphertext: 719e2ad302bc22f99167e70fa4e94b3e LL ciphertext: 719e2ad302bc22f99167e70fa4e94b3e
+3 HL ciphertext: f5fc59c7f8da83042f7bc3a91523b825 LL ciphertext: f5fc59c7f8da83042f7bc3a91523b825
+4 HL ciphertext: 85c571ad7668afc57a07ac7d6da44112 LL ciphertext: 85c571ad7668afc57a07ac7d6da44112
+5 HL ciphertext: d1d80053b4fd38ab2f1b07378372b217 LL ciphertext: d1d80053b4fd38ab2f1b07378372b217
+6 HL ciphertext: 326358f86cdf1878cd438c003de548f3 LL ciphertext: 326358f86cdf1878cd438c003de548f3
+7 HL ciphertext: d895330eca97c5b1da638aa683013886 LL ciphertext: d895330eca97c5b1da638aa683013886
+8 HL ciphertext: f30424d75ed663fdd6909b166d6453be LL ciphertext: f30424d75ed663fdd6909b166d6453be
+9 HL ciphertext: d56d5f5fc4f115fe0a57ca1cbaf86d55 LL ciphertext: d56d5f5fc4f115fe0a57ca1cbaf86d55
+10 HL ciphertext: eeb8cacfe101110969a12bc704670a6d LL ciphertext: eeb8cacfe101110969a12bc704670a6d
+11 HL ciphertext: b28199f5dfe2847d6b2c9c86b40f4e5b LL ciphertext: b28199f5dfe2847d6b2c9c86b40f4e5b
+12 HL ciphertext: 1b99d545faeffc7f94893496e0257ea2 LL ciphertext: 1b99d545faeffc7f94893496e0257ea2
+13 HL ciphertext: 3aef2deed9fdcc6f9bfbea8f0782c0c1 LL ciphertext: 3aef2deed9fdcc6f9bfbea8f0782c0c1
+14 HL ciphertext: ac1da13b855bd50c5e8cafd7bc9c4400 LL ciphertext: ac1da13b855bd50c5e8cafd7bc9c4400
+15 HL ciphertext: f275588346f95d41eecf1f9a12696583 LL ciphertext: f275588346f95d41eecf1f9a12696583
+16 HL ciphertext: 5c87637ff3b1ce6d76bf634d8b4b2a6a LL ciphertext: 5c87637ff3b1ce6d76bf634d8b4b2a6a
+17 HL ciphertext: e7b7fabb053ef3f5c320ff90e7f1b735 LL ciphertext: e7b7fabb053ef3f5c320ff90e7f1b735
+18 HL ciphertext: 52eb70dfc123d19a3354f7ee23117838 LL ciphertext: 52eb70dfc123d19a3354f7ee23117838
+19 HL ciphertext: 3ae35f835ce6ede5ebe229e290f8b7ee LL ciphertext: 3ae35f835ce6ede5ebe229e290f8b7ee
+20 HL ciphertext: c1287ea007bcb08bf4bddae85bde704d LL ciphertext: c1287ea007bcb08bf4bddae85bde704d
+21 HL ciphertext: b32f272c21a4ab6e66e05db8af59d411 LL ciphertext: b32f272c21a4ab6e66e05db8af59d411
+22 HL ciphertext: 230b5f3e1e9f9e8aab24a845a598a6f1 LL ciphertext: 230b5f3e1e9f9e8aab24a845a598a6f1
+23 HL ciphertext: 316e4f0c044a625de9a6d0e7a78a0be1 LL ciphertext: 316e4f0c044a625de9a6d0e7a78a0be1
+24 HL ciphertext: 639be6cdb923ff6ba894f67aea787cce LL ciphertext: 639be6cdb923ff6ba894f67aea787cce
+
+Test: aesmct Mode: ECB Correct: 25 Incorrect: 0
