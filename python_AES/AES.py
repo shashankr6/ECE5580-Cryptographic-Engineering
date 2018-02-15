@@ -308,7 +308,7 @@ def Inv_mixColumns(block):
 		for j in range(0,4):
 			for k in range(0,4):
 				Product[i][j] = Product[i][j] ^ GFmult(Matrix[i][k],Block[k][j])
-		print "[",i,"]""[",j,"] = ",hex(Product[i][j])
+		#print "[",i,"]""[",j,"] = ",hex(Product[i][j])
 	
 	for i in range(0,4):
 		for j in range(0,4):

@@ -1,23 +1,34 @@
 import AES as aes
 import sys
+import string
 
-print "\n"
-if len(sys.argv) < 4:
-	print "python AES.py <mode (ECB, CBC, or OFB)> <palint_text> <master_key> <IV (if needed)>"
-else:
-	mode = sys.argv[1]
-	PT = int(sys.argv[2], 16)
-	Key = int(sys.argv[3], 16)
+#from binascii import hexlify
+
+def test_AES (mode, PT, Key, IV):
+	#print "\n"
+	#if len(sys.argv) < 4:
+	#print "python AES.py <mode (ECB, CBC, or OFB)> <palint_text> <master_key> <IV (if needed)>"
+	#else:
+	#mode = sys.argv[1]
 	
+	PT_int = int(PT, 16)
+	Key_int = int(Key, 16)
+	#print(hex(PT_int))
+	#print(hex(Key_int))
 	if mode == "ECB":
-		print "Cipher Text = ", hex(aes.AES(PT, Key))
+		CT = hex(aes.AES(PT_int, Key_int))
+
 	elif mode == "CBC":
-		IV = int(sys.argv[4], 16)
-		print "Cipher Text = ", hex(aes.AES(PT^IV, Key))
+		IV_int = int(IV, 16)
+		CT = hex(aes.AES(PT_int^IV_int, Key_int))
+	
 	elif mode == "OFB":
-		IV = int(sys.argv[4], 16)
-		OP = aes.AES(IV, Key)
-		print "Cipher Text = ", hex(OP ^ PT)
+		IV_int = int(IV, 16)
+		OP = aes.AES(IV_int, Key_int)
+		CT = hex(OP ^ PT_int)
+	
 	else:
 		print "Unsupported Mode"
-		#return
+
+	#print "Ciphertext: ",CT
+	return CT
