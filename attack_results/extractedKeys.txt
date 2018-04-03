@@ -1,0 +1,406 @@
+No. of traces: 3500
+Key number 16
+No. of traces: 3500
+Key number 16
+b88a67c3f780d216d2f27a6a8ca5e6a
+correctly extracted: 0
+No. of traces: 3500
+Key number 16
+539f3c15e7eeede2d5a455f50febe82
+correctly extracted: 9
+Key number 17
+1247a295d2de632955ebe284fd27cad
+correctly extracted: 6
+Key number 18
+d99c6b24e263c3da8323bdcbf682080
+correctly extracted: 3
+Key number 19
+adf5b83894ee36a6effe221df44dde
+correctly extracted: 4
+Key number 20
+ff2b684e614a95bf536246aae43773
+correctly extracted: 5
+Key number 21
+b21859b818efd1a2c88fca269932475
+correctly extracted: 4
+Key number 22
+57c5c4d0a86ecb8b68bfe755b78b6
+correctly extracted: 8
+Key number 23
+f81a1caca7e89018b8b6fe776d1a24d5
+correctly extracted: 6
+Key number 24
+dd14b75e195081b91926d229e84ad129
+correctly extracted: 7
+Key number 25
+46b67d88ddf1cfdee07b49766cfae6c
+correctly extracted: 4
+Key number 26
+8343ae1af23d591faecaebb38fee4b0
+correctly extracted: 4
+Key number 27
+0cd8afbc093fe71aeeeadcff9e5758c
+correctly extracted: 7
+Key number 28
+da5fdda3429a2b77f621a712ff7ec1cc
+correctly extracted: 6
+Key number 29
+16b3b497f31864421f19cb2b1969b252
+correctly extracted: 7
+Key number 30
+ca6b23eab8818b8dccd3c04f84d4d3
+correctly extracted: 5
+Key number 31
+20e4345f6d1db830a1539a4d50c234e
+correctly extracted: 8
+9 6 3 4 5 4 8 6 7 4 4 7 6 7 5 8
+No. of traces: 5000
+Key number 16
+a49f3c6b617e2b712d5a1d5f50a0bee1
+correctly extracted: 9
+Key number 17
+12476595d2de63e4c7eb953efb73fad
+correctly extracted: 8
+Key number 18
+d49c6bfc4e653c5097321eb04c68c780
+correctly extracted: 7
+Key number 19
+ade45b1440af8f9a4effe221dfc4d59
+correctly extracted: 7
+Key number 20
+c643575ecb4a579c4c62fc6aae04573
+correctly extracted: 7
+Key number 21
+b2365e4c8e72b32c8f7e7ee5b02475
+correctly extracted: 9
+Key number 22
+937fcd0a86ebd468bf4455b78b6
+correctly extracted: 7
+Key number 23
+c01ac1ac4ee890181dcc96776d2d240
+correctly extracted: 9
+Key number 24
+ddd4b770b25081368326eb29e88f7129
+correctly extracted: 8
+Key number 25
+29de7d2496cf50e07bd9762acfae6c
+correctly extracted: 8
+Key number 26
+b4483ae1b7c0d57fa699bb38431396
+correctly extracted: 8
+Key number 27
+0cd8aa8c93fe6cb8eeadb0928c758c
+correctly extracted: 9
+Key number 28
+6e5fd7a3421a2b77435bef12ff7675cc
+correctly extracted: 8
+Key number 29
+16b3ee97861864b2db19642b192d606b
+correctly extracted: 10
+Key number 30
+5a7cf4d34881fb8decdb2c01e75d496
+correctly extracted: 9
+Key number 31
+20e4745f309ab8303453be4d50c294e
+correctly extracted: 9
+9 8 7 7 7 9 7 9 8 8 8 9 8 10 9 9
+No. of traces: 6000
+Key number 16
+429f481407e2b712d5a1d5f50a7c598
+correctly extracted: 8
+Key number 17
+1247bb95d2de2a9a97eb953ef3f3fad
+correctly extracted: 9
+Key number 18
+139cd9aa66653c397321eb04c683080
+correctly extracted: 6
+Key number 19
+ade4381440afccf9a4effe221dfc4d14
+correctly extracted: 9
+Key number 20
+17b4575e994ac97abe62fc6aae04573
+correctly extracted: 11
+Key number 21
+b22065e4c8eb0b32cf3427ec2ac075
+correctly extracted: 9
+Key number 22
+93dd31d0a86ebd4aebf8f55b78146
+correctly extracted: 10
+Key number 23
+651a30ac4ee890181dcc96776d1a240
+correctly extracted: 9
+Key number 24
+ddd4b7fbba50811d8326eb29e8227129
+correctly extracted: 9
+Key number 25
+f8b6ac2176cf3d57b89762a55ae6c
+correctly extracted: 10
+Key number 26
+cc483ae1b7c0d5b9116940bb3843a676
+correctly extracted: 9
+Key number 27
+9bcd8aa8c93fe57b8eeadb0632758c
+correctly extracted: 11
+Key number 28
+6ecb23a3421a2b85e5e8ef12ff76c1cc
+correctly extracted: 11
+Key number 29
+16b3b497f3186497419642b192d606b
+correctly extracted: 11
+Key number 30
+5a6be39c38881890decdb2c01e74d496
+correctly extracted: 12
+Key number 31
+20421b5f6d9ab8303453364d50c994e
+correctly extracted: 13
+8 9 6 9 11 9 10 9 9 10 9 11 11 11 12 13
+No. of traces: 7500
+Key number 16
+429f5316d7e2b3f2d5aa95f50a7bee1
+correctly extracted: 10
+Key number 17
+db47bb95d2de2a8567eb953efffcfad
+correctly extracted: 11
+Key number 18
+2994d7b24e653ce097321ec19bd5c780
+correctly extracted: 11
+Key number 19
+adb4389d47afccf9a4efed221db89549
+correctly extracted: 10
+Key number 20
+1741575e994ac97ad662fc6aae4f5a9
+correctly extracted: 14
+Key number 21
+b2365e4c8ebeaa2cf3a7ee5dbc075
+correctly extracted: 10
+Key number 22
+57dd31d0a86ec313aebf8f55b78146
+correctly extracted: 12
+Key number 23
+f81a30ac4ee890184ecc96776ddb240
+correctly extracted: 10
+Key number 24
+ddd4b7fb7c5081aeff26eb29928f6a29
+correctly extracted: 10
+Key number 25
+e4b6ac2176cf3147b89767655ae6c
+correctly extracted: 9
+Key number 26
+cc487be1b7c0d5c1116940bb3843a676
+correctly extracted: 10
+Key number 27
+9bcd8aa8c93fe71b8ee1eb0632758c
+correctly extracted: 10
+Key number 28
+6ecb6a3421a2b80e5e8ef12ff7e35cc
+correctly extracted: 13
+Key number 29
+3cb32a97f31864974319642b192def6b
+correctly extracted: 12
+Key number 30
+5a7109ccb881890decd97c01e86d496
+correctly extracted: 11
+Key number 31
+2042675f6d1ab8813453364d50c994e
+correctly extracted: 13
+10 11 11 10 14 10 12 10 10 9 10 10 13 12 11 13
+No. of traces: 9000
+Key number 16
+539fa788407e2b3f2d5a245f5089bee1
+correctly extracted: 14
+Key number 17
+db47bb95d2de2a9a1ceb953ef3f27ad
+correctly extracted: 11
+Key number 18
+299cd7b2ee653ce097322fc14cd5c780
+correctly extracted: 13
+Key number 19
+adea389d47afccf9a4ef10221db54d49
+correctly extracted: 12
+Key number 20
+1789572a994ac97a1462fc6aae4f5a9
+correctly extracted: 14
+Key number 21
+b234c5e4c8ebe2e2cf3427ee5421275
+correctly extracted: 11
+Key number 22
+57ddb9d0a86ec3baebf8f55db89c6
+correctly extracted: 15
+Key number 23
+f81a7ac4ee8e51892cc96776d48240
+correctly extracted: 13
+Key number 24
+ddd4b7fb7c50811dff26382992806a29
+correctly extracted: 12
+Key number 25
+3deac2176cf3147b89765055ae6c
+correctly extracted: 10
+Key number 26
+934896e1b7c0d5373c69c1bb3899676
+correctly extracted: 14
+Key number 27
+9bcd8a47c93fe714beeadb063e5758c
+correctly extracted: 12
+Key number 28
+6ecb6a3721a2b89e5e8f412ff7e51cc
+correctly extracted: 13
+Key number 29
+3cb39797f1864974319642b192d426b
+correctly extracted: 13
+Key number 30
+5a7109ccb881890decd97c01ecdd496
+correctly extracted: 11
+Key number 31
+2042e45f6d1ab8303453364d50c994e
+correctly extracted: 14
+14 11 13 12 14 11 15 13 12 10 14 12 13 13 11 14
+No. of traces: 10000
+Key number 16
+539f8688407e2b3f2d5a245f50febee1
+correctly extracted: 15
+Key number 17
+db47b595d2de2a9a1ceb953efffa5ad
+correctly extracted: 11
+Key number 18
+2994d7b24e653ce097322fc14c3c780
+correctly extracted: 14
+Key number 19
+adea389d47afccf9a4effb221db54d49
+correctly extracted: 12
+Key number 20
+1789575e994ac97a1462fc6aae4f5a9
+correctly extracted: 15
+Key number 21
+b23db5e4c8ebe2e2cf3427ee5c47a75
+correctly extracted: 11
+Key number 22
+57ddb9d0a86ec3baebf8f55db86c6
+correctly extracted: 14
+Key number 23
+f8227ac4ee8e51892cc96776d48240
+correctly extracted: 14
+Key number 24
+ddd4b7e19150811dff26df299289f729
+correctly extracted: 13
+Key number 25
+d3deac2a6cf3d57b897659b5ae6c
+correctly extracted: 11
+Key number 26
+934896e1b7c0d52a4e6992bb3899676
+correctly extracted: 14
+Key number 27
+9bcd8aa8c93fef44beeadb063a6758c
+correctly extracted: 13
+Key number 28
+6ecb6a3721a2b6ee5e84612ff7e51cc
+correctly extracted: 13
+Key number 29
+3cb39797871864974319642b192d426b
+correctly extracted: 13
+Key number 30
+5a7e39ccb881890decdb2c01ecdd496
+correctly extracted: 12
+Key number 31
+cc42e45f6d1ab8303453364d50c994e
+correctly extracted: 15
+15 11 14 12 15 11 14 14 13 11 14 13 13 13 12 15
+No. of traces: 15000
+Key number 16
+539fb188407e2b3f2d5a245f50febee1
+correctly extracted: 16
+Key number 17
+db474a9567de2adaefeb953efff27ad
+correctly extracted: 15
+Key number 18
+2994d7b2ee653c6e97322fc14c3c780
+correctly extracted: 16
+Key number 19
+ad22389d47afccf9a4efdd2254b54d49
+correctly extracted: 15
+Key number 20
+1789575e994ac97a862fc6aae4f5a9
+correctly extracted: 16
+Key number 21
+b233b5e4c8e84f2cf3427ee5152675
+correctly extracted: 15
+Key number 22
+57ddb9d0a86ec343aebf8f55db89c6
+correctly extracted: 16
+Key number 23
+f8227ac4ee8e51892cc96776d744c0
+correctly extracted: 15
+Key number 24
+ddd4b7e1a850811dff26df2992807e29
+correctly extracted: 15
+Key number 25
+d3deac2a6cf3d57bd976b355ae6c
+correctly extracted: 14
+Key number 26
+934896e1b7c0d5c13c6992bb3899676
+correctly extracted: 16
+Key number 27
+9bcd375cc93fef44beeadb063b7758c
+correctly extracted: 15
+Key number 28
+6ecb6a3721a2b89e5e8ef12ff7e2fcc
+correctly extracted: 14
+Key number 29
+3cb3979787186497fd19642b192dc16b
+correctly extracted: 15
+Key number 30
+5a66339ccb881890decdb2c01e95d496
+correctly extracted: 15
+Key number 31
+cc42485f6d1ab8303453364d50c994e
+correctly extracted: 16
+16 15 16 15 16 15 16 15 15 14 16 15 14 15 15 16
+No. of traces: 20000
+Key number 16
+539fb188407e2b3f2d5a245f50febee1
+correctly extracted: 16
+Key number 17
+db474a9567de2adaefeb953efff27ad
+correctly extracted: 15
+Key number 18
+2994d7b2ee653c6e97322fc14c3c780
+correctly extracted: 16
+Key number 19
+ad22389da4afccf9a4efdd2254b54d49
+correctly extracted: 16
+Key number 20
+1789575e994ac97a862fc6aae4f5a9
+correctly extracted: 16
+Key number 21
+b233b5e4c8e84f2cf3427ee5222675
+correctly extracted: 16
+Key number 22
+57ddb9d0a86ec343aebf8f55db89c6
+correctly extracted: 16
+Key number 23
+f8227ac4ee8e51892cc96776ded4c0
+correctly extracted: 16
+Key number 24
+ddd4b7e16650811dff26df2992807e29
+correctly extracted: 16
+Key number 25
+d3deac2a6cf3d57bd976b3556b6c
+correctly extracted: 15
+Key number 26
+934896e1b7c0d5c13c6992bb3899676
+correctly extracted: 16
+Key number 27
+9bcd375cc93fef44beeadb0631c758c
+correctly extracted: 16
+Key number 28
+6ecb6a3721a2bffe5e8ef12ff7edccc
+correctly extracted: 16
+Key number 29
+3cb3979787186497fd19642b192dc16b
+correctly extracted: 15
+Key number 30
+5a66339c49881890decdb2c01e95d496
+correctly extracted: 15
+Key number 31
+cc42485f6d1ab8303453364d50c994e
+correctly extracted: 16
+16 15 16 16 16 16 16 16 16 15 16 16 16 15 15 16
