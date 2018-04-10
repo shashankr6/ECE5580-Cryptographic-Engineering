@@ -1,15 +1,20 @@
-#ifndef _AES_C_
-#define _AES_C_
-
-
 /*****************************************************************************/
 /* Includes:                                                                 */
 /*****************************************************************************/
-#include <stdint.h>
+//#include "msp.h"
 #include "aes.h"
-//#include "stm32f4xx.h" //For GPIO pins addressing (trigger signal)
-//#include "stm32f4xx_gpio.h"//For GPIO pins addressing (trigger signal)
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <ti/devices/msp432p4xx/driverlib/driverlib.h>
+#include <ti/grlib/grlib.h>
+#include "LcdDriver/Crystalfontz128x128_ST7735.h"
+#include "LcdDriver/HAL_MSP_EXP432P401R_Crystalfontz128x128_ST7735.h"
 
+#define bool _Bool
+
+#ifndef _AES_C_
+#define _AES_C_
 
 /*****************************************************************************/
 /* Defines:                                                                  */
@@ -30,7 +35,7 @@
 // in    - pointer to the CipherText to be decrypted.
 // out   - pointer to buffer to hold output of the decryption.
 // state - array holding the intermediate results during decryption.
-static uint8_t* in, *out, state[4][4];
+static uint8_t* in, out[16], state[4][4];
 
 // The array that stores the round keys.
 static uint8_t RoundKey[176];
@@ -38,8 +43,11 @@ static uint8_t RoundKey[176];
 // The Key input to the AES Program
 static uint8_t* Key;
 
+
+uint8_t CT[16];    // final Ciphertext output
+
 // The lookup-tables are marked const so they can be placed in read-only storage instead of RAM
-// The numbers below can be computed dynamically trading ROM for RAM - 
+// The numbers below can be computed dynamically trading ROM for RAM -
 // This can be useful in (embedded) bootloader applications, where ROM is often limited.
 static const uint8_t sbox[256] =   {
   //0     1    2      3     4    5     6     7      8    9     A      B    C     D     E     F
@@ -79,26 +87,26 @@ static const uint8_t rsbox[256] =
 , 0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d };
 
 
-// The round constant word array, Rcon[i], contains the values given by 
+// The round constant word array, Rcon[i], contains the values given by
 // x to th e power (i-1) being powers of x (x is denoted as {02}) in the field GF(2^8)
 // Note that i starts at 1, not 0).
 static const uint8_t Rcon[255] = {
-  0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 
-  0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 
-  0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 
-  0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 
-  0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 
-  0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 
-  0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 
-  0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 
-  0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 
-  0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 
-  0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 
-  0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 
-  0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 
-  0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 
-  0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 
-  0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb  };
+  0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a,
+  0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39,
+  0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a,
+  0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8,
+  0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef,
+  0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc,
+  0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b,
+  0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3,
+  0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94,
+  0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20,
+  0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63, 0xc6, 0x97, 0x35,
+  0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2, 0x9f,
+  0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d, 0x01, 0x02, 0x04,
+  0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36, 0x6c, 0xd8, 0xab, 0x4d, 0x9a, 0x2f, 0x5e, 0xbc, 0x63,
+  0xc6, 0x97, 0x35, 0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd,
+  0x61, 0xc2, 0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74, 0xe8, 0xcb, 0x8d};
 
 
 /*****************************************************************************/
@@ -115,12 +123,12 @@ static uint8_t getSBoxInvert(uint8_t num)
 }
 
 
-// This function produces Nb(Nr+1) round keys. The round keys are used in each round to decrypt the states. 
+// This function produces Nb(Nr+1) round keys. The round keys are used in each round to decrypt the states.
 static void KeyExpansion()
 {
   uint32_t i, j, k;
   uint8_t tempa[4]; // used for the column/row operations
-  
+
   // The first round key is the key itself.
   for(i = 0; i < Nk; ++i)
   {
@@ -151,7 +159,7 @@ static void KeyExpansion()
         tempa[3] = k;
       }
 
-      // SubWord() is a function that takes a four-byte input word and 
+      // SubWord() is a function that takes a four-byte input word and
       // applies the S-box to each of the four bytes to produce an output word.
 
       // Function Subword()
@@ -183,7 +191,7 @@ static void KeyExpansion()
 
 // This function adds the round key to state.
 // The round key is added to the state by an XOR function.
-static void AddRoundKey(uint8_t round) 
+static void AddRoundKey(uint8_t round)
 {
   uint8_t i,j;
   for(i=0;i<4;i++)
@@ -191,8 +199,11 @@ static void AddRoundKey(uint8_t round)
     for(j = 0; j < 4; ++j)
     {
       state[j][i] ^= RoundKey[round * Nb * 4 + i * Nb + j];
+//      printf("%02x_",RoundKey[round * Nb * 4 + i * Nb + j]);
     }
   }
+
+
 }
 
 // The SubBytes Function Substitutes the values in the
@@ -216,14 +227,14 @@ static void ShiftRows()
 {
   uint8_t temp;
 
-  // Rotate first row 1 columns to left  
+  // Rotate first row 1 columns to left
   temp        = state[1][0];
   state[1][0] = state[1][1];
   state[1][1] = state[1][2];
   state[1][2] = state[1][3];
   state[1][3] = temp;
 
-  // Rotate second row 2 columns to left  
+  // Rotate second row 2 columns to left
   temp        = state[2][0];
   state[2][0] = state[2][2];
   state[2][2] = temp;
@@ -251,7 +262,7 @@ static void MixColumns()
   uint8_t i;
   uint8_t Tmp,Tm,t;
   for(i = 0; i < 4; ++i)
-  {  
+  {
     t   = state[0][i];
     Tmp = state[0][i] ^ state[1][i] ^ state[2][i] ^ state[3][i] ;
     Tm  = state[0][i] ^ state[1][i] ; Tm = xtime(Tm); state[0][i] ^= Tm ^ Tmp ;
@@ -273,14 +284,14 @@ static void InvMixColumns()
   int i;
   uint8_t a,b,c,d;
   for(i=0;i<4;i++)
-  { 
-  
+  {
+
     a = state[0][i];
     b = state[1][i];
     c = state[2][i];
     d = state[3][i];
 
-    
+
     state[0][i] = Multiply(a, 0x0e) ^ Multiply(b, 0x0b) ^ Multiply(c, 0x0d) ^ Multiply(d, 0x09);
     state[1][i] = Multiply(a, 0x09) ^ Multiply(b, 0x0e) ^ Multiply(c, 0x0b) ^ Multiply(d, 0x0d);
     state[2][i] = Multiply(a, 0x0d) ^ Multiply(b, 0x09) ^ Multiply(c, 0x0e) ^ Multiply(d, 0x0b);
@@ -308,14 +319,14 @@ static void InvShiftRows()
 {
   uint8_t temp;
 
-  // Rotate first row 1 columns to right  
+  // Rotate first row 1 columns to right
   temp=state[1][3];
   state[1][3]=state[1][2];
   state[1][2]=state[1][1];
   state[1][1]=state[1][0];
   state[1][0]=temp;
 
-  // Rotate second row 2 columns to right 
+  // Rotate second row 2 columns to right
   temp=state[2][0];
   state[2][0]=state[2][2];
   state[2][2]=temp;
@@ -348,8 +359,9 @@ static void Cipher()
   }
 
   // Add the First round key to the state before starting the rounds.
-  AddRoundKey(0); 
-  
+  //printf("\n Round 0 Key: ");
+  AddRoundKey(0);
+
   // There will be Nr rounds.
   // The first Nr-1 rounds are identical.
   // These Nr-1 rounds are executed in the loop below.
@@ -360,7 +372,7 @@ static void Cipher()
     MixColumns();
     AddRoundKey(round);
   }
-  
+
   // The last round is given below.
   // The MixColumns function is not here in the last round.
   SubBytes();
@@ -369,13 +381,18 @@ static void Cipher()
 
   // The encryption process is over.
   // Copy the state array to output array.
-  for(i = 0; i < 4; ++i)
+  printf("\n Out: ");
+  for(i = 0; i < 4; i++)
   {
-    for(j = 0; j < 4; ++j)
+    for(j = 0; j < 4; j++)
     {
       out[(i * 4) + j] = state[j][i];
+      printf("%02x_", out[(i * 4) + j]);
     }
   }
+
+  printf("\n done..");
+
 }
 
 static void InvCipher()
@@ -392,7 +409,7 @@ static void InvCipher()
   }
 
   // Add the First round key to the state before starting the rounds.
-  AddRoundKey(Nr); 
+  AddRoundKey(Nr);
 
   // There will be Nr rounds.
   // The first Nr-1 rounds are identical.
@@ -404,7 +421,7 @@ static void InvCipher()
     AddRoundKey(round);
     InvMixColumns();
   }
-  
+
   // The last round is given below.
   // The MixColumns function is not here in the last round.
   InvShiftRows();
@@ -427,35 +444,237 @@ static void InvCipher()
 /* Public functions:                                                         */
 /*****************************************************************************/
 
-void AES128_ECB_encrypt(uint8_t* input, uint8_t* key, uint8_t *output)
+void AES128_ECB_encrypt(uint8_t* input, uint8_t* key)
+//void AES128_ECB_encrypt(uint8_t* input, uint8_t* key, uint8_t *state)
+
 {
+
+  printf("\n Starting AES Encryption\n");
   // Copy the Key and CipherText
   Key = key;
+  int i;
+
+  printf("\nKey:");
+
+  for (i=0;i<16;i++){
+      printf("%02x_", *(Key+i));
+  }
+
+  printf("\nPT: ");
+  for (i=0;i<16;i++){
+      printf("%02x_", *(input+i));
+  }
+
   in = input;
-  out = output;
+  //out = output;
 
   // The KeyExpansion routine must be called before encryption.
   KeyExpansion();
 
   // The next function call encrypts the PlainText with the Key using AES algorithm.
-//  GPIOC->BSRRL = GPIO_Pin_2; // Trigger goes high in pin PC2
   Cipher();
-//  GPIOC->BSRRH = GPIO_Pin_2; // Trigger goes low in pin PC2
+
+  printf ("\nFinal output: ");
+  // Copy the output array to final output array.
+  for(i=0;i<16;i++) {
+      *(CT+i)=out[i];
+      printf ("%02x_",*(CT+i));
+  }
+
+  printf("\n Completed encryption..");
 }
 
 void AES128_ECB_decrypt(uint8_t* input, uint8_t* key, uint8_t *output)
 {
   Key = key;
   in = input;
-  out = output;
+//  out = output;
 
   KeyExpansion();
 
-//  GPIOC->BSRRL = GPIO_Pin_2; // Trigger goes high in pin PC2
   InvCipher();
-//  GPIOC->BSRRH = GPIO_Pin_2; // Trigger goes low in pin PC2
 }
 
 #endif //_AES_C_
 
 
+/////////////////////////////////////////
+//--------------UART API---------------//
+/////////////////////////////////////////
+
+eUSCI_UART_Config uartConfig = {
+     EUSCI_A_UART_CLOCKSOURCE_SMCLK,               // SMCLK Clock Source = 3MHz
+     19,                                           // UCBR   = 19
+     8,                                            // UCBRF  = 8
+     0xAA,                                         // UCBRS  = 0xAA
+     EUSCI_A_UART_NO_PARITY,                       // No Parity
+     EUSCI_A_UART_LSB_FIRST,                       // LSB First
+     EUSCI_A_UART_ONE_STOP_BIT,                    // One stop bit
+     EUSCI_A_UART_MODE,                            // UART mode
+     EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION // Oversampling
+};
+
+void InitUART() {
+    UART_initModule(EUSCI_A0_BASE, &uartConfig);
+    UART_enableModule(EUSCI_A0_BASE);
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
+        GPIO_PIN2 | GPIO_PIN3, GPIO_PRIMARY_MODULE_FUNCTION);
+}
+
+bool UARTHasChar() {
+    return (UART_getInterruptStatus (EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG)
+                == EUSCI_A_UART_RECEIVE_INTERRUPT_FLAG);
+}
+
+uint8_t UARTGetChar() {
+    if (UARTHasChar())
+        return UART_receiveData(EUSCI_A0_BASE);
+    else
+        return 0;
+}
+
+bool UARTCanSend() {
+    return (UART_getInterruptStatus (EUSCI_A0_BASE, EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG)
+                == EUSCI_A_UART_TRANSMIT_INTERRUPT_FLAG);
+}
+
+void UARTPutChar(uint8_t t) {
+    while (!UARTCanSend()) ;
+    UART_transmitData(EUSCI_A0_BASE,t);
+}
+
+//volatile uint8_t KeyAES[16] = { 0xca, 0xfe, 0xba, 0xbe, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0x00, 0x00, 0x00, 0x00 };
+//volatile uint8_t PT[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+bool isalpha(char c){
+    return (((c >= 'A') && (c <= 'F')) || ((c >= 'a') && (c <= 'f')));
+}
+
+bool isnum(char c){
+    return ((c >= '0') && (c <= '9'));
+}
+
+//////////////////////////////////////////////
+//---------------Main function--------------//
+//////////////////////////////////////////////
+
+
+void main() {
+
+    char key[32];// = "139a35422f1d61de3c91787fe0507afd";
+    char pt[32];// = "b9145a768b7dc489a096b546f43b231f";
+
+    char *IV = "";
+    uint8_t KeyAES[16];
+    uint8_t PT[16];
+
+    uint8_t i,j,k;
+
+    WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
+
+    InitUART();
+    // Capture and store data
+    int uart_char_count = 0;
+    uint8_t c;  // store the Uart char
+    uint8_t CT_char[32];    // convert the ciphertext to char;
+    uint8_t low_4bits, high_4bits;
+
+    while (1){
+        if (UARTHasChar()){
+            c = UARTGetChar();
+            printf ("\n received char: %c", c);
+            printf("  count: %d", uart_char_count);
+
+            if (uart_char_count<32)
+                pt[uart_char_count] = c;
+            else
+                key[uart_char_count-32] = c;
+
+            // Run AES after every PT-Key pair
+            if (uart_char_count==63){
+                // Make key int
+                uint8_t temp;
+                for (k=0;k<32;k++){
+                    if (isalpha(key[k]))
+                        temp = key[k]-'a'+10;
+                    else if (isnum(key[k]))
+                        temp = key[k] - '0';
+                    else
+                        printf ("\nInvalid key or plaintext");
+
+                    if (k%2)
+                        KeyAES[k/2] |= temp;
+                    else
+                        KeyAES[k/2] = temp<<4;
+                }
+
+                // Make PT int
+                for (k=0;k<32;k++){
+                    if (isalpha(pt[k]))
+                        temp = pt[k]-'a'+10;
+                    else if (isnum(pt[k]))
+                        temp = pt[k] - '0';
+                    else
+                        printf ("\nInvalid key or plaintext");
+
+                    if (k%2)
+                        PT[k/2] |= temp;
+                    else
+                        PT[k/2] = temp<<4;
+
+                }
+
+
+                AES128_ECB_encrypt(PT, KeyAES);
+
+                // Put the ciphertext on UART
+                for (i=0;i<16;i++){
+                    low_4bits = CT[i] & 0x0F;
+                    high_4bits = (CT[i] & 0xF0)>>4;
+
+                    if (high_4bits > 9){
+                        CT_char[2*i] = high_4bits-10+'a';
+                    }
+
+                    else {
+                        CT_char[2*i] = high_4bits+'0';
+                    }
+
+                    if (low_4bits > 9){
+                        CT_char[2*i+1] = low_4bits-10+'a';
+                    }
+
+                    else {
+                        CT_char[2*i+1] = low_4bits+'0';
+                    }
+
+                }
+
+                for (i=0;i<32;i++){
+                    UARTPutChar(CT_char[i]);
+                }
+
+                printf("\nOutput: ");
+
+                for (i=0;i<16;i++) {
+                    printf ("%02x_", *(CT+i));
+                }
+
+
+            }
+            uart_char_count = (uart_char_count+1)%64;
+        }
+
+    }
+
+    printf("\n key: ");
+    for (k=0;k<16;k++){
+        printf ("%02x_\n",KeyAES[k]);
+    }
+
+    printf("\n PT: ");
+    for (k=0;k<16;k++){
+        printf ("%02x_\n",PT[k]);
+    }
+
+}
